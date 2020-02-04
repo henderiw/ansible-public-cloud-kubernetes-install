@@ -306,11 +306,11 @@
   become_user: root
   become_method: sudo
 
-- name: Add crio repository
-  command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
-  become: yes
-  become_user: root
-  become_method: sudo
+# - name: Add crio repository
+#   command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
+#   become: yes
+#   become_user: root
+#   become_method: sudo
 
 - name: install cri-o
   yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
