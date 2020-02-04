@@ -1,0 +1,272 @@
+---
+- name: upgrade all packages on {{ inventory_hostname }}
+  yum:
+    name: '*'
+    state: latest
+  remote_user: root
+
+- name: install  packages
+  yum: name={{ item.pkgname }} state={{ item.state }}
+  with_items:
+    - { pkgname: "ntp", state: "present"  }
+    - { pkgname: "epel-release", state: "present"  }
+  remote_user: root
+
+- name: Update /etc/hosts file on {{ inventory_hostname }}
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ ansible_host }} {{ inventory_hostname }}"
+  remote_user: root
+
+- name: Restart network service on {{ inventory_hostname }} 
+  service:
+    name: network
+    state: restarted
+  remote_user: root
+
+- name: Remove old NTP servers on {{ inventory_hostname }}
+  lineinfile:
+    dest: /etc/ntp.conf
+    regexp: "^server"
+    state: absent
+  remote_user: root
+
+- name: Configure NTP servers on {{ inventory_hostname }}
+  lineinfile:
+    dest: /etc/ntp.conf
+    line: "server {{ item }} iburst"
+  with_items: "{{ ntp_server_list }}"
+  remote_user: root
+
+- name: Stop the ntpd service if running on {{ inventory_hostname }}
+  service:
+    name: ntpd
+    state: stopped
+  remote_user: root
+
+- name: Manually sync time with ntp server on {{ inventory_hostname }}
+  command: ntpdate -u "{{ntp_server_list[0]}}"
+  remote_user: root
+
+- name: Start ntpd on {{ inventory_hostname }} 
+  service:
+    name: ntpd
+    state: started
+  remote_user: root
+
+- name: check ntp sync state
+  shell: ntpstat | awk 'NR==1{print $1}'
+  register: sync_status
+  until: sync_status.stdout == "synchronised"
+  retries: 29
+  delay: 10
+  remote_user: root
+
+- name: install  packages
+  yum: name={{ item.pkgname }} state={{ item.state }}
+  with_items:
+    - { pkgname: "bridge-utils", state: "present"  }
+    - { pkgname: "golang", state: "present"  }
+    - { pkgname: "git", state: "present"  }
+  remote_user: root
+
+###### Kubernetes specifics #########
+
+- name: Add mappings to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    marker: ""
+    block: |
+      {{ item.ip }} {{ item.name }}
+  with_items:
+    - { name: master.mgt.wim.lab, ip: 10.101.2.200 }
+    - { name: node1.mgt.wim.lab, ip: 10.101.2.201 }
+    - { name: node2.mgt.wim.lab, ip: 10.101.2.202 }
+    - { name: node3.mgt.wim.lab, ip: 10.101.2.203 }
+  remote_user: root
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  remote_user: root
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+  remote_user: root
+
+- name: Disable swap
+  command: swapoff -a
+  remote_user: root
+
+# - name: Add the br_netfilter module
+#   modprobe:
+#     name: br_netfilter
+#     state: present
+#   remote_user: root
+#   register: br_netfilter
+
+- name: install docker-ce dependency packages
+  yum: name={{ item.pkgname }} state={{ item.state }}
+  with_items:
+    - { pkgname: "yum-utils", state: "present"  }
+    - { pkgname: "device-mapper-persistent-data", state: "present"  }
+    - { pkgname: "lvm2", state: "present"  }
+  remote_user: root
+
+- name: Add docker-ce repository
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  remote_user: root
+
+- name: install docker-ce dependency packages
+  yum: name={{ item.pkgname }} state={{ item.state }}
+  with_items:
+    - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
+  remote_user: root
+
+- name: create /etc/docker directory
+  file:
+    path: /etc/docker
+    state: directory
+  remote_user: root
+
+- name: create file /etc/docker/daemon.json
+  file:
+    path: /etc/docker/daemon.json
+    state: touch
+  remote_user: root
+
+- name: setup daemon
+  blockinfile:
+    path: /etc/docker/daemon.json
+    marker: ""
+    block: |
+      {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2",
+      "storage-opts": [
+        "overlay2.override_kernel_check=true"
+        ]
+      }
+  remote_user: root
+
+# - name: create /etc/systemd/system/docker.service.d directory for proxy
+#   file:
+#     path: /etc/systemd/system/docker.service.d
+#     state: directory
+#   remote_user: root
+
+# - name: create file /etc/systemd/system/docker.service.d/http-proxy.conf
+#   file:
+#     path: /etc/systemd/system/docker.service.d/http-proxy.conf
+#     state: touch
+#   remote_user: root
+
+# - name: add proxy content in /etc/systemd/system/docker.service.d/http-proxy.conf
+#   blockinfile:
+#     path: /etc/systemd/system/docker.service.d/http-proxy.conf
+#     marker: ""
+#     block: |
+#       [Service]    
+#       Environment="HTTP_PROXY=http://135.245.192.7:8000/" "NO_PROXY=localhost,10.101.2.200,10.101.2.201, 10.101.2.202, 10.101.2.203, 10.96.0.1"
+#   remote_user: root
+
+- name: daemon_reload and docker restart
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+
+- name: enable service docker and ensure it is not masked
+  systemd:
+    name: docker
+    enabled: yes
+    masked: no
+
+# CRI-O
+
+- name: Add overlay module
+  modprobe:
+    name: overlay
+    state: present
+
+- name: Add br_netfilter module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: create file /etc/sysctl.d/99-kubernetes-cri.conf
+  file:
+    path: /etc/sysctl.d/99-kubernetes-cri.conf
+    state: touch
+  remote_user: root
+
+- name: add sysctl /etc/sysctl.d/99-kubernetes-cri.conf
+  blockinfile:
+    path: /etc/sysctl.d/99-kubernetes-cri.conf
+    marker: ""
+    block: |
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.ipv4.ip_forward                 = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+  remote_user: root
+
+- name: sysctl --system
+  command: sysctl --system
+  remote_user: root
+
+- name: Add crio repository
+  command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
+  remote_user: root
+
+- name: install cri-o
+  yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
+  with_items:
+    - { pkgname: "cri-o", state: "present"  }
+  remote_user: root
+
+- name: cri-o restart
+  systemd:
+    state: restarted
+    name: cri-o
+
+# Kubernetes Repo's
+
+- name: ensure kubernetes.repo exists
+  copy:
+    content: ""
+    dest: /etc/yum.repos.d/kubernetes.repo
+    force: no
+    group: root
+    owner: root
+    mode: 0644
+  remote_user: root
+
+- name: insert items in kubernetes.repo file
+  blockinfile:
+    path: /etc/yum.repos.d/kubernetes.repo
+    marker: ""
+    block: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+             https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  remote_user: root
+
+- name: install kubernetes packages
+  yum: name={{ item.pkgname }} state={{ item.state }}
+  with_items:
+    - { pkgname: "kubelet", state: "present"  }
+    - { pkgname: "kubeadm", state: "present"  }
+    - { pkgname: "kubectl", state: "present"  }
+  remote_user: root

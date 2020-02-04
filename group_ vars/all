@@ -1,3 +1,7 @@
+#ntp server
+ntp_server_list:
+  - 10.10.20.10
+
 #KUBERTNETES SPECIFIC
 
 # Ansible
