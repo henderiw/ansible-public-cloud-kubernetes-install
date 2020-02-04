@@ -3,7 +3,7 @@
   yum:
     name: '*'
     state: latest
-  remote_user: root
+  become_user: root
 
 - name: install  packages
   yum: name={{ item.pkgname }} state={{ item.state }}
