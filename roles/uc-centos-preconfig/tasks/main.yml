@@ -5,31 +5,31 @@
     state: latest
   become_user: root
 
-- name: Check if EPEL repo is already configured.
-  #stat: path={{ epel_repofile_path }}
-  stat: path="/etc/yum.repos.d/epel.repo"
-  register: epel_repofile_result
-  become_user: root
+# - name: Check if EPEL repo is already configured.
+#   #stat: path={{ epel_repofile_path }}
+#   stat: path="/etc/yum.repos.d/epel.repo"
+#   register: epel_repofile_result
+#   become_user: root
  
-- name: Install EPEL repo.
-  yum:
-    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-    state: present
-  register: result
-  when: not epel_repofile_result.stat.exists
-  become_user: root
+# - name: Install EPEL repo.
+#   yum:
+#     name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+#     state: present
+#   register: result
+#   when: not epel_repofile_result.stat.exists
+#   become_user: root
  
-- name: Import EPEL GPG key.
-  rpm_key:
-    key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
-    state: present
-  when: not epel_repofile_result.stat.exists
-  become_user: root
+# - name: Import EPEL GPG key.
+#   rpm_key:
+#     key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
+#     state: present
+#   when: not epel_repofile_result.stat.exists
+#   become_user: root
 
 - name: install  packages
   yum: name={{ item.pkgname }} state={{ item.state }}
   with_items:
-#    - { pkgname: "epel-release", state: "present"  }
+    - { pkgname: "epel-release", state: "present"  }
     - { pkgname: "ntp", state: "present"  }
   become_user: root
 
