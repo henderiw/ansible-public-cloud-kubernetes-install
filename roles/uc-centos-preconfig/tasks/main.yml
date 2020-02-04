@@ -33,49 +33,65 @@
   with_items:
     - { pkgname: "epel-release", state: "present"  }
     - { pkgname: "ntp", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Update /etc/hosts file on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/hosts
     line: "{{ ansible_host }} {{ inventory_hostname }}"
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Restart network service on {{ inventory_hostname }} 
   service:
     name: network
     state: restarted
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Remove old NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     regexp: "^server"
     state: absent
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Configure NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     line: "server {{ item }} iburst"
   with_items: "{{ ntp_server_list }}"
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Stop the ntpd service if running on {{ inventory_hostname }}
   service:
     name: ntpd
     state: stopped
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Manually sync time with ntp server on {{ inventory_hostname }}
   command: ntpdate -u "{{ntp_server_list[0]}}"
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Start ntpd on {{ inventory_hostname }} 
   service:
     name: ntpd
     state: started
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: check ntp sync state
   shell: ntpstat | awk 'NR==1{print $1}'
@@ -83,7 +99,9 @@
   until: sync_status.stdout == "synchronised"
   retries: 29
   delay: 10
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: install  packages
   yum: name={{ item.pkgname }} state={{ item.state }}
@@ -91,7 +109,9 @@
     - { pkgname: "bridge-utils", state: "present"  }
     - { pkgname: "golang", state: "present"  }
     - { pkgname: "git", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
 
 ###### Kubernetes specifics #########
 
@@ -106,23 +126,31 @@
     - { name: node1.mgt.wim.lab, ip: 10.101.2.201 }
     - { name: node2.mgt.wim.lab, ip: 10.101.2.202 }
     - { name: node3.mgt.wim.lab, ip: 10.101.2.203 }
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Disable SELinux
   selinux:
     state: disabled
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Remove swapfile from /etc/fstab
   mount:
     name: swap
     fstype: swap
     state: absent
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Disable swap
   command: swapoff -a
+  become: yes
   become_user: root
+  become_method: sudo
 
 # - name: Add the br_netfilter module
 #   modprobe:
@@ -137,29 +165,39 @@
     - { pkgname: "yum-utils", state: "present"  }
     - { pkgname: "device-mapper-persistent-data", state: "present"  }
     - { pkgname: "lvm2", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Add docker-ce repository
   command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: install docker-ce dependency packages
   yum: name={{ item.pkgname }} state={{ item.state }}
   with_items:
     - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: create /etc/docker directory
   file:
     path: /etc/docker
     state: directory
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: create file /etc/docker/daemon.json
   file:
     path: /etc/docker/daemon.json
     state: touch
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: setup daemon
   blockinfile:
@@ -177,7 +215,9 @@
         "overlay2.override_kernel_check=true"
         ]
       }
+  become: yes
   become_user: root
+  become_method: sudo
 
 # - name: create /etc/systemd/system/docker.service.d directory for proxy
 #   file:
@@ -205,12 +245,18 @@
     state: restarted
     daemon_reload: yes
     name: docker
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: enable service docker and ensure it is not masked
   systemd:
     name: docker
     enabled: yes
     masked: no
+  become: yes
+  become_user: root
+  become_method: sudo
 
 # CRI-O
 
@@ -218,17 +264,25 @@
   modprobe:
     name: overlay
     state: present
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: Add br_netfilter module
   modprobe:
     name: br_netfilter
     state: present
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: create file /etc/sysctl.d/99-kubernetes-cri.conf
   file:
     path: /etc/sysctl.d/99-kubernetes-cri.conf
     state: touch
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: add sysctl /etc/sysctl.d/99-kubernetes-cri.conf
   blockinfile:
@@ -238,26 +292,37 @@
       net.bridge.bridge-nf-call-iptables  = 1
       net.ipv4.ip_forward                 = 1
       net.bridge.bridge-nf-call-ip6tables = 1
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: sysctl --system
   command: sysctl --system
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: Add crio repository
   command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: install cri-o
   yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
   with_items:
     - { pkgname: "cri-o", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: cri-o restart
   systemd:
     state: restarted
     name: cri-o
+  become: yes
+  become_user: root
+  become_method: sudo
 
 # Kubernetes Repo's
 
@@ -269,7 +334,9 @@
     group: root
     owner: root
     mode: 0644
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: insert items in kubernetes.repo file
   blockinfile:
@@ -284,7 +351,9 @@
       repo_gpgcheck=1
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
              https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  become: yes
   become_user: root
+  become_method: sudo
 
 - name: install kubernetes packages
   yum: name={{ item.pkgname }} state={{ item.state }}
@@ -292,4 +361,6 @@
     - { pkgname: "kubelet", state: "present"  }
     - { pkgname: "kubeadm", state: "present"  }
     - { pkgname: "kubectl", state: "present"  }
+  become: yes
   become_user: root
+  become_method: sudo
