@@ -1,14 +1,19 @@
 ---
-
 - name: Check if kubeadm has already run
   stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: Init cluster if needed
   include_tasks: init.yml
   when: not kubeadm_ca.stat.exists
   run_once: yes
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: Enable and check kubelet service
   systemd:
@@ -17,6 +22,9 @@
     state: started
     enabled: yes
   register: started_kubelet
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: "Copy config file"
   fetch:
@@ -25,3 +33,6 @@
     flat: yes
   run_once: yes
   ignore_errors: yes
+  become: yes
+  become_user: root
+  become_method: sudo

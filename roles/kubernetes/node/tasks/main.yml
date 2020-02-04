@@ -4,10 +4,16 @@
   stat:
     path: "/etc/kubernetes/kubelet.conf"
   register: kubelet_conf
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: Join to cluster if needed
   include_tasks: join.yml
   when: not kubelet_conf.stat.exists
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: Enable and check kubelet service
   systemd:
@@ -15,3 +21,6 @@
     daemon_reload: yes
     state: started
     enabled: yes
+  become: yes
+  become_user: root
+  become_method: sudo

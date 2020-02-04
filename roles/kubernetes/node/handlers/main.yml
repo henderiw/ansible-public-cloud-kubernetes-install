@@ -4,3 +4,6 @@
   delegate_to: "{{ groups['master'][0] }}"
   run_once: true
   ignore_errors: true
+  become: yes
+  become_user: root
+  become_method: sudo
