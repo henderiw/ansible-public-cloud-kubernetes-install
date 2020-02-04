@@ -29,8 +29,8 @@
 - name: install  packages
   yum: name={{ item.pkgname }} state={{ item.state }}
   with_items:
-    - { pkgname: "ntp", state: "present"  }
     - { pkgname: "epel-release", state: "present"  }
+    - { pkgname: "ntp", state: "present"  }
   become_user: root
 
 - name: Update /etc/hosts file on {{ inventory_hostname }}
