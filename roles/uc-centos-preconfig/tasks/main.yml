@@ -122,10 +122,14 @@
     block: |
       {{ item.ip }} {{ item.name }}
   with_items:
-    - { name: master.mgt.wim.lab, ip: 10.101.2.200 }
-    - { name: node1.mgt.wim.lab, ip: 10.101.2.201 }
-    - { name: node2.mgt.wim.lab, ip: 10.101.2.202 }
-    - { name: node3.mgt.wim.lab, ip: 10.101.2.203 }
+    - { name: tfMaster0, ip: 10.10.20.20 }
+    - { name: tfMaster1, ip: 10.10.20.21 }
+    - { name: tfMaster2, ip: 10.10.20.22 }
+    - { name: tfWorker0, ip: 10.10.20.100 }
+    - { name: tfWorker1, ip: 10.10.20.101 }
+    - { name: tfWorker2, ip: 10.10.20.102 }
+    - { name: tfWorker3, ip: 10.10.20.103 }
+    - { name: tfWorker4, ip: 10.10.20.104 }
   become: yes
   become_user: root
   become_method: sudo
@@ -347,7 +351,7 @@
       name=Kubernetes
       baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
       enabled=1
-      gpgcheck=1
+      gpgcheck=0
       repo_gpgcheck=1
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
              https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
