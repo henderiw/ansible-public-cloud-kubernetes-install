@@ -3,6 +3,7 @@
   yum:
     name: '*'
     state: latest
+  become: yes
   become_user: root
   become_method: sudo
 
