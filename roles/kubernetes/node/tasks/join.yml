@@ -1,7 +1,7 @@
 ---
 
 - name: Reset Kubernetes component
-  shell: "kubeadm reset --force"
+  shell: "kubeadm reset --force --cri-socket /var/run/dockershim.sock"
   register: reset_cluster
   become: yes
   become_user: root
