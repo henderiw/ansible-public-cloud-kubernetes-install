@@ -306,11 +306,17 @@
   become_user: root
   become_method: sudo
 
-# - name: Add crio repository
-#   command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
-#   become: yes
-#   become_user: root
-#   become_method: sudo
+- name: Check if EPEL repo is already configured.
+  stat: path="/etc/yum.repos.d/cbs.centos.org_repos_paas7-crio-311-candidate_x86_64_os_.repo"
+  register: crio_repofile_result
+  become_user: root
+
+- name: Add crio repository
+  command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
+  when: not crio_repofile_result.stat.exists
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: install cri-o
   yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
@@ -330,6 +336,11 @@
 
 # Kubernetes Repo's
 
+- name: Check if kubernetes repo is already configured.
+  stat: path="/etc/yum.repos.d/kubernetes.repo"
+  register: kubernetes_repofile_result
+  become_user: root
+
 - name: ensure kubernetes.repo exists
   copy:
     content: ""
@@ -338,6 +349,7 @@
     group: root
     owner: root
     mode: 0644
+  when: not kubernetes_repofile_result.stat.exists
   become: yes
   become_user: root
   become_method: sudo
@@ -355,6 +367,7 @@
       repo_gpgcheck=1
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
              https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  when: not kubernetes_repofile_result.stat.exists
   become: yes
   become_user: root
   become_method: sudo
