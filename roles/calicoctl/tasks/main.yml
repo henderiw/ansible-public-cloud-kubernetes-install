@@ -4,13 +4,13 @@
     path: ~/.bashrc 
     line: "export PATH=$PATH:/usr/local/bin"
 
-- name: download
-  become: yes
-  become_user: root
-  get_url:
-    url: '{{ calicoctl_url }}'
-    dest: '{{ calicoctl_target }}'
-    mode: 0755
+# - name: download
+#   become: yes
+#   become_user: root
+#   get_url:
+#     url: '{{ calicoctl_url }}'
+#     dest: '{{ calicoctl_target }}'
+#     mode: 0755
 
 - name: Download calicoctl
   get_url:
