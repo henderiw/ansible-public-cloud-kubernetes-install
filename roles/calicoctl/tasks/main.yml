@@ -1,0 +1,21 @@
+---
+- name: adding path in ~/.bashrc
+  lineinfile: 
+    path: ~/.bashrc 
+    line: "export PATH=$PATH:/usr/local/bin"
+
+- name: download
+  become: yes
+  become_user: root
+  get_url:
+    url: '{{ calicoctl_url }}'
+    dest: '{{ calicoctl_target }}'
+    mode: 0755
+
+- name: Download calicoctl
+  get_url:
+    url: 'https://github.com/projectcalico/calicoctl/releases/download/v3.8.1/calicoctl'
+    dest: '/usr/local/bin'
+    mode: 0755
+    use_proxy: yes
+
