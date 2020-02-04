@@ -4,6 +4,7 @@
     name: '*'
     state: latest
   become_user: root
+  become_method: sudo
 
 # - name: Check if EPEL repo is already configured.
 #   #stat: path={{ epel_repofile_path }}
