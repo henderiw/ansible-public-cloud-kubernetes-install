@@ -9,6 +9,8 @@ epel_repofile_path: "/etc/yum.repos.d/epel.repo"
 
 #KUBERTNETES SPECIFIC
 
+master_ip: 10.10.20.20
+
 # Ansible
 ansible_user: henderiw
 
