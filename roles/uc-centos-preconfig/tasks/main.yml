@@ -10,49 +10,49 @@
   with_items:
     - { pkgname: "ntp", state: "present"  }
     - { pkgname: "epel-release", state: "present"  }
-  remote_user: root
+  become_user: root
 
 - name: Update /etc/hosts file on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/hosts
     line: "{{ ansible_host }} {{ inventory_hostname }}"
-  remote_user: root
+  become_user: root
 
 - name: Restart network service on {{ inventory_hostname }} 
   service:
     name: network
     state: restarted
-  remote_user: root
+  become_user: root
 
 - name: Remove old NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     regexp: "^server"
     state: absent
-  remote_user: root
+  become_user: root
 
 - name: Configure NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     line: "server {{ item }} iburst"
   with_items: "{{ ntp_server_list }}"
-  remote_user: root
+  become_user: root
 
 - name: Stop the ntpd service if running on {{ inventory_hostname }}
   service:
     name: ntpd
     state: stopped
-  remote_user: root
+  become_user: root
 
 - name: Manually sync time with ntp server on {{ inventory_hostname }}
   command: ntpdate -u "{{ntp_server_list[0]}}"
-  remote_user: root
+  become_user: root
 
 - name: Start ntpd on {{ inventory_hostname }} 
   service:
     name: ntpd
     state: started
-  remote_user: root
+  become_user: root
 
 - name: check ntp sync state
   shell: ntpstat | awk 'NR==1{print $1}'
@@ -60,7 +60,7 @@
   until: sync_status.stdout == "synchronised"
   retries: 29
   delay: 10
-  remote_user: root
+  become_user: root
 
 - name: install  packages
   yum: name={{ item.pkgname }} state={{ item.state }}
@@ -68,7 +68,7 @@
     - { pkgname: "bridge-utils", state: "present"  }
     - { pkgname: "golang", state: "present"  }
     - { pkgname: "git", state: "present"  }
-  remote_user: root
+  become_user: root
 
 ###### Kubernetes specifics #########
 
@@ -83,23 +83,23 @@
     - { name: node1.mgt.wim.lab, ip: 10.101.2.201 }
     - { name: node2.mgt.wim.lab, ip: 10.101.2.202 }
     - { name: node3.mgt.wim.lab, ip: 10.101.2.203 }
-  remote_user: root
+  become_user: root
 
 - name: Disable SELinux
   selinux:
     state: disabled
-  remote_user: root
+  become_user: root
 
 - name: Remove swapfile from /etc/fstab
   mount:
     name: swap
     fstype: swap
     state: absent
-  remote_user: root
+  become_user: root
 
 - name: Disable swap
   command: swapoff -a
-  remote_user: root
+  become_user: root
 
 # - name: Add the br_netfilter module
 #   modprobe:
@@ -114,29 +114,29 @@
     - { pkgname: "yum-utils", state: "present"  }
     - { pkgname: "device-mapper-persistent-data", state: "present"  }
     - { pkgname: "lvm2", state: "present"  }
-  remote_user: root
+  become_user: root
 
 - name: Add docker-ce repository
   command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  remote_user: root
+  become_user: root
 
 - name: install docker-ce dependency packages
   yum: name={{ item.pkgname }} state={{ item.state }}
   with_items:
     - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
-  remote_user: root
+  become_user: root
 
 - name: create /etc/docker directory
   file:
     path: /etc/docker
     state: directory
-  remote_user: root
+  become_user: root
 
 - name: create file /etc/docker/daemon.json
   file:
     path: /etc/docker/daemon.json
     state: touch
-  remote_user: root
+  become_user: root
 
 - name: setup daemon
   blockinfile:
@@ -154,7 +154,7 @@
         "overlay2.override_kernel_check=true"
         ]
       }
-  remote_user: root
+  become_user: root
 
 # - name: create /etc/systemd/system/docker.service.d directory for proxy
 #   file:
@@ -205,7 +205,7 @@
   file:
     path: /etc/sysctl.d/99-kubernetes-cri.conf
     state: touch
-  remote_user: root
+  become_user: root
 
 - name: add sysctl /etc/sysctl.d/99-kubernetes-cri.conf
   blockinfile:
@@ -215,21 +215,21 @@
       net.bridge.bridge-nf-call-iptables  = 1
       net.ipv4.ip_forward                 = 1
       net.bridge.bridge-nf-call-ip6tables = 1
-  remote_user: root
+  become_user: root
 
 - name: sysctl --system
   command: sysctl --system
-  remote_user: root
+  become_user: root
 
 - name: Add crio repository
   command: yum-config-manager --add-repo=https://cbs.centos.org/repos/paas7-crio-311-candidate/x86_64/os/
-  remote_user: root
+  become_user: root
 
 - name: install cri-o
   yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
   with_items:
     - { pkgname: "cri-o", state: "present"  }
-  remote_user: root
+  become_user: root
 
 - name: cri-o restart
   systemd:
@@ -246,7 +246,7 @@
     group: root
     owner: root
     mode: 0644
-  remote_user: root
+  become_user: root
 
 - name: insert items in kubernetes.repo file
   blockinfile:
@@ -261,7 +261,7 @@
       repo_gpgcheck=1
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
              https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-  remote_user: root
+  become_user: root
 
 - name: install kubernetes packages
   yum: name={{ item.pkgname }} state={{ item.state }}
@@ -269,4 +269,4 @@
     - { pkgname: "kubelet", state: "present"  }
     - { pkgname: "kubeadm", state: "present"  }
     - { pkgname: "kubectl", state: "present"  }
-  remote_user: root
+  become_user: root
