@@ -1,5 +1,4 @@
 ---
-
 - name: Create Kubernetes addon directory
   file:
     path: "{{ network_dir }}"

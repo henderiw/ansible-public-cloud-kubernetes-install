@@ -1,8 +1,7 @@
 ---
 - name: Install Docker
   gather_facts: No
-  hosts: docker
- 
+   
   tasks:
     - name: Install yum utils
       yum:
