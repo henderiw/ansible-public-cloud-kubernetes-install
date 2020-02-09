@@ -11,7 +11,7 @@
   include_tasks: init.yml
   when: not kubeadm_ca.stat.exists
   run_once: yes
-  become: yes
+  #become: yes
   #become_user: root
   become_method: sudo
 
@@ -22,7 +22,7 @@
     state: started
     enabled: yes
   register: started_kubelet
-  become: yes
+  #become: yes
   #become_user: root
   become_method: sudo
 
@@ -33,6 +33,6 @@
     flat: yes
   run_once: yes
   ignore_errors: yes
-  become: yes
+  #become: yes
   #become_user: root
   become_method: sudo
