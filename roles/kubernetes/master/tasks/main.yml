@@ -4,7 +4,7 @@
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
   become: yes
-  become_user: root
+  #become_user: root
   become_method: sudo
 
 - name: Init cluster if needed
@@ -12,7 +12,7 @@
   when: not kubeadm_ca.stat.exists
   run_once: yes
   become: yes
-  become_user: root
+  #become_user: root
   become_method: sudo
 
 - name: Enable and check kubelet service
@@ -23,7 +23,7 @@
     enabled: yes
   register: started_kubelet
   become: yes
-  become_user: root
+  #become_user: root
   become_method: sudo
 
 - name: "Copy config file"
@@ -34,5 +34,5 @@
   run_once: yes
   ignore_errors: yes
   become: yes
-  become_user: root
+  #become_user: root
   become_method: sudo
