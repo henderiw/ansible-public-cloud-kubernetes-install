@@ -3,7 +3,7 @@
   stat:
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca
-  become: yes
+  #become: yes
   #become_user: root
   become_method: sudo
 
