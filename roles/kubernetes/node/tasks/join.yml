@@ -3,9 +3,6 @@
 - name: Reset Kubernetes component
   shell: "kubeadm reset --force --cri-socket /var/run/dockershim.sock"
   register: reset_cluster
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Join to Kubernetes cluster
   when: reset_cluster is succeeded
@@ -15,8 +12,5 @@
                 --cri-socket /var/run/dockershim.sock \
                 {{ master_ip }}:6443
   register: join_cluster
-  become: yes
-  become_user: root
-  become_method: sudo
   notify:
     - Recreate kube-dns

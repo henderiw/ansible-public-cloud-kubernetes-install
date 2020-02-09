@@ -3,9 +3,6 @@
 - name: Reset Kubernetes component
   shell: "kubeadm reset --force --cri-socket /var/run/dockershim.sock"
   register: reset_cluster
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Init Kubernetes cluster
   when: reset_cluster is succeeded
@@ -19,17 +16,11 @@
                  {{ kubeadm_opts }} \
                  {{ init_opts }}
   register: init_cluster
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Create Kubernetes config directory
   file:
     path: ".kube/"
     state: directory
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Copy admin.conf to Home directory
   when: init_cluster is succeeded
@@ -40,9 +31,6 @@
     group: "{{ ansible_user | default(ansible_user_id) }}"
     mode: 0755
     remote_src: true
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Deploy kubernetes dashboard into cluster
   when: init_cluster is succeeded and enable_dashboard
@@ -54,6 +42,3 @@
   retries: 5
   delay: 2
   ignore_errors: true
-  become: yes
-  become_user: root
-  become_method: sudo
