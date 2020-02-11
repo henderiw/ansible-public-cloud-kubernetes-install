@@ -1,7 +1,7 @@
 ---
 - name: copy docker files to /tmp
   copy:
-    src: "{{ local_dir }}{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
+    src: "{{ local_dir }}/{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
     dest: "/tmp/{{ item }}"
     mode: 0644
   with_items:
