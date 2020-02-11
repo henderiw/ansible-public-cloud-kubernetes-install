@@ -21,7 +21,7 @@
     - mysqld-exporter.tar.gz
 
 - name: tag docker images
-  command: docker image tag {{ item.name }}:{{ item.version}} {{registry_ip}}:5000/{{ item.name }}
+  command: docker image tag {{ item.name }}:{{ item.version}} {{registry_ip}}:5000/{{ item.name }}:{{ item.version}}
   with_items:
     - { name: "nrd", version: "NRD_11_0_R5" }
     - { name: "nrddb", version: "NRDDB_11_0_R5" }
@@ -30,7 +30,7 @@
     - { name: "prom/mysqld-exporter", version: "v0.10.0" }
 
 - name: docker image push to local registry
-  command: docker image push {{registry_ip}}:5000/{{ item.name }}
+  command: docker image push {{registry_ip}}:5000/{{ item.name }}:{{ item.version}}
   with_items:
     - { name: "nrd", version: "NRD_11_0_R5" }
     - { name: "nrddb", version: "NRDDB_11_0_R5" }
