@@ -1,4 +1,4 @@
-{ "insecure-registries":["{{ inventory_hostname }}:5000"] }
+{ "insecure-registries":["{{ ansible_host }}:5000"] }
 {
 "exec-opts": ["native.cgroupdriver=systemd"],
 "log-driver": "json-file",
