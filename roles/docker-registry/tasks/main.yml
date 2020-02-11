@@ -12,7 +12,6 @@
     state: started
     restart_policy: unless-stopped
     volumes:
-      - /etc/docker/registry:/var/lib/registry
       - /opt/registry/data:/var/lib/registry
     published_ports:
       - "5000:5000"
