@@ -5,14 +5,14 @@
 #   roles:
 #     - uc-centos-preconfig
 
-- name: Setup docker 
-  hosts: kube_cluster
-  gather_facts: no
-  become: yes
-  become_user: root
-  become_method: sudo
-  roles:
-    - { role: docker, tags: docker }
+# - name: Setup docker 
+#   hosts: kube_cluster
+#   gather_facts: no
+#   become: yes
+#   become_user: root
+#   become_method: sudo
+#   roles:
+#     - { role: docker, tags: docker }
 
 - name: Setup bootstrap 
   hosts: bootstrap
