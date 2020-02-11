@@ -6,6 +6,15 @@
 #     - uc-centos-preconfig
 
 - name: Setup bootstrap 
+  hosts: kube_cluster
+  gather_facts: no
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - { role: docker, tags: docker }
+
+- name: Setup bootstrap 
   hosts: bootstrap
   gather_facts: no
   become: yes
