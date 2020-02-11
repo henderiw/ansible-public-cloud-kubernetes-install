@@ -15,7 +15,7 @@
     - { role: docker, tags: docker }
 
 - name: Setup private docker registry
-  hosts: registry | localhost
+  hosts: localhost
   become: yes
   become_user: root
   become_method: sudo
