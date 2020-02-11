@@ -75,7 +75,7 @@
  
 - name: Add user artem to docker group
   user:
-    name: {{ ansible_user }}
+    name: "{{ ansible_user }}"
     groups: docker
     append: yes
 
