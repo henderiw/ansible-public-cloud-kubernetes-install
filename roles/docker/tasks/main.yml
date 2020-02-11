@@ -32,22 +32,30 @@
     path: /etc/docker/daemon.json
     state: touch
 
-- name: setup daemon
-  blockinfile:
-    path: /etc/docker/daemon.json
-    marker: ""
-    block: |
-      {
-      "exec-opts": ["native.cgroupdriver=systemd"],
-      "log-driver": "json-file",
-      "log-opts": {
-          "max-size": "100m"
-      },
-      "storage-driver": "overlay2",
-      "storage-opts": [
-          "overlay2.override_kernel_check=true"
-        ]
-      }
+- name: setup /etc/docker/daemon.json
+  copy:
+    src: "{{ item }},j2"
+    dest: "/etc/docker/{ item }}"
+    mode: 0755
+  with_items:
+    - daemon.json
+
+# - name: setup daemon
+#   blockinfile:
+#     path: /etc/docker/daemon.json
+#     marker: ""
+#     block: |
+#       {
+#       "exec-opts": ["native.cgroupdriver=systemd"],
+#       "log-driver": "json-file",
+#       "log-opts": {
+#           "max-size": "100m"
+#       },
+#       "storage-driver": "overlay2",
+#       "storage-opts": [
+#           "overlay2.override_kernel_check=true"
+#         ]
+#       }
 
 # - name: create /etc/systemd/system/docker.service.d directory for proxy
 #   file:
