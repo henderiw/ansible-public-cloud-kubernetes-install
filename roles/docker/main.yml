@@ -3,43 +3,88 @@
   gather_facts: No
    
   tasks:
-    - name: Install yum utils
-      yum:
-        name: yum-utils
-        state: latest
- 
-    - name: Install device-mapper-persistent-data
-      yum:
-        name: device-mapper-persistent-data
-        state: latest
- 
-    - name: Install lvm2
-      yum:
-        name: lvm2
-        state: latest
+    - name: install docker-ce dependency packages
+      yum: name={{ item.pkgname }} state={{ item.state }}
+      with_items:
+      - { pkgname: "yum-utils", state: "latest"  }
+      - { pkgname: "device-mapper-persistent-data", state: "latest"  }
+      - { pkgname: "lvm2", state: "latest"  }
  
     - name: Add Docker repo
       get_url:
         url: https://download.docker.com/linux/centos/docker-ce.repo
         dest: /etc/yum.repos.d/docker-ce.repo
-      become: yes
+    
+    # - name: Add docker-ce repository
+    #   command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    #   become: yes
+    #   become_user: root
+    #   become_method: sudo
+
+    - name: install docker-ce dependency packages
+      yum: name={{ item.pkgname }} state={{ item.state }}
+      with_items:
+      - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
+    
+    - name: create /etc/docker directory
+      file:
+        path: /etc/docker
+        state: directory
+
+    - name: create file /etc/docker/daemon.json
+      file:
+        path: /etc/docker/daemon.json
+        state: touch
+
+    - name: setup daemon
+      blockinfile:
+        path: /etc/docker/daemon.json
+        marker: ""
+        block: |
+          {
+          "exec-opts": ["native.cgroupdriver=systemd"],
+          "log-driver": "json-file",
+          "log-opts": {
+             "max-size": "100m"
+          },
+          "storage-driver": "overlay2",
+          "storage-opts": [
+             "overlay2.override_kernel_check=true"
+            ]
+          }
+
+# - name: create /etc/systemd/system/docker.service.d directory for proxy
+#   file:
+#     path: /etc/systemd/system/docker.service.d
+#     state: directory
+
+# - name: create file /etc/systemd/system/docker.service.d/http-proxy.conf
+#   file:
+#     path: /etc/systemd/system/docker.service.d/http-proxy.conf
+#     state: touch
+
+# - name: add proxy content in /etc/systemd/system/docker.service.d/http-proxy.conf
+#   blockinfile:
+#     path: /etc/systemd/system/docker.service.d/http-proxy.conf
+#     marker: ""
+#     block: |
+#       [Service]    
+#       Environment="HTTP_PROXY=http://135.245.192.7:8000/" "NO_PROXY=localhost,10.101.2.200,10.101.2.201, 10.101.2.202, 10.101.2.203, 10.96.0.1"
  
-    - name: Install Docker
-      package:
-        name: docker-ce
-        state: latest
-      become: yes
- 
-    - name: Start Docker service
-      service:
+    - name: daemon_reload and docker restart
+      systemd:
+        state: restarted
+        daemon_reload: yes
         name: docker
-        state: started
-        enabled: yes
-      become: yes
  
     - name: Add user artem to docker group
       user:
         name: {{ ansible_user }}
         groups: docker
         append: yes
-      become: yes
+
+    - name: enable service docker and ensure it is not masked
+      systemd:
+        name: docker
+        enabled: yes
+        masked: no

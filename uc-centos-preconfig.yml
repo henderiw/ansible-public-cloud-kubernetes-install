@@ -4,3 +4,11 @@
   serial: 1
   roles:
     - uc-centos-preconfig
+
+- hosts: bootstrap
+  gather_facts: no
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - { role: docker, tags: docker }
