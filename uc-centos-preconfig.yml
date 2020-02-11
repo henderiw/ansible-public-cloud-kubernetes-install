@@ -1,9 +1,9 @@
 ---
-- hosts: kube_cluster
-  gather_facts: no
-  serial: 1
-  roles:
-    - uc-centos-preconfig
+# - hosts: kube_cluster
+#   gather_facts: no
+#   serial: 1
+#   roles:
+#     - uc-centos-preconfig
 
 - hosts: bootstrap
   gather_facts: no
