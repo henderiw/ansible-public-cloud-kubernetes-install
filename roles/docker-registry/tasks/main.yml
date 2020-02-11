@@ -1,0 +1,18 @@
+---
+- name: Create /opt/registry/data directory if it does not exist
+  file:
+    path: /opt/registry/data
+    state: directory
+    mode: 0755
+
+- name: Create Docker Registry
+  docker_container:
+    name: registry
+    image: registry:latest
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /etc/docker/registry:/var/lib/registry
+      - /opt/registry/data:/var/lib/registry
+    published_ports:
+      - "5000:5000"

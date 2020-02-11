@@ -5,10 +5,19 @@
 #   roles:
 #     - uc-centos-preconfig
 
-- hosts: bootstrap
+- name: Setup bootstrap 
+  hosts: bootstrap
   gather_facts: no
   become: yes
   become_user: root
   become_method: sudo
   roles:
     - { role: docker, tags: docker }
+
+- name: Setup private docker registry
+  hosts: registry | localhost
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - { role: docker-registry, tags: docker-registry }
