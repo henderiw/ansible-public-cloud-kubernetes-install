@@ -1,0 +1,39 @@
+---
+- name: copy docker files to /tmp
+  copy:
+    src: "{{ local_dir }}{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
+    dest: "/tmp/{{ item }}"
+    mode: 0644
+  with_items:
+    - nrd.tar.gz
+    - nrddb.tar.gz
+    - collectd.tar.gz
+    - mariadb.tar.gz
+    - mysqld-exporter.tar.gz
+
+- name: load docker images
+  command: docker load -i /tmp/{{ item }}
+  with_items:
+    - nrd.tar.gz
+    - nrddb.tar.gz
+    - collectd.tar.gz
+    - mariadb.tar.gz
+    - mysqld-exporter.tar.gz
+
+- name: tag docker images
+  command: docker image tag {{ item.name }}:{{ item.version}} {{registry_ip}}:5000/{{ item.name }}
+  with_items:
+    - { name: "nrd", version: "NRD_11_0_R5" }
+    - { name: "nrddb", version: "NRDDB_11_0_R5" }
+    - { name: "collectd", version: "5.8.1-1--NRD_11_0_R5" }
+    - { name: "bitnami/mariadb", version: "10.3.15-debian-9-r31" }
+    - { name: "prom/mysqld-exporter", version: "v0.10.0" }
+
+- name: docker image push to local registry
+  command: docker image push {{registry_ip}}:5000/{{ item.name }}
+  with_items:
+    - { name: "nrd", version: "NRD_11_0_R5" }
+    - { name: "nrddb", version: "NRDDB_11_0_R5" }
+    - { name: "collectd", version: "5.8.1-1--NRD_11_0_R5" }
+    - { name: "bitnami/mariadb", version: "10.3.15-debian-9-r31" }
+    - { name: "prom/mysqld-exporter", version: "v0.10.0" }

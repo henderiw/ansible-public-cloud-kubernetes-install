@@ -3,9 +3,15 @@ ntp_server_list:
   - 10.10.20.10
 
 #Docker
+registry_ip: 10.10.20.10
 registry_port: 5000
 registry_user: admin
 registry_pass: admin
+
+local_dir: /home/henderiw
+nrd_version: NRD_11_0_R5
+nrd_dir: nrd_11_0_R5
+docker_dir: docker_images
 
 #EPEL
 epel_repo_url: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"

@@ -21,3 +21,11 @@
   become_method: sudo
   roles:
     - { role: docker-registry, tags: docker-registry }
+
+- name: load images to docker registry
+  hosts: localhost
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - { role: docker-load, tags: docker-load }
