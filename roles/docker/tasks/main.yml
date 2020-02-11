@@ -27,13 +27,13 @@
     path: /etc/docker
     state: directory
 
-- name: create file /etc/docker/daemon.json
-  file:
-    path: /etc/docker/daemon.json
-    state: touch
+# - name: create file /etc/docker/daemon.json
+#   file:
+#     path: /etc/docker/daemon.json
+#     state: touch
 
 - name: setup /etc/docker/daemon.json
-  copy:
+  template:
     src: "{{ item }},j2"
     dest: "/etc/docker/{ item }}"
     mode: 0755
