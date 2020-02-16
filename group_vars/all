@@ -2,11 +2,11 @@ unpacked: true
 
 #ntp server
 ntp_server_list:
-  - 10.10.20.10
+  - 10.0.1.10
 
 #KUBERTNETES SPECIFIC
 
-master_ip: 10.10.20.20
+master_ip: 10.1.0.10
 
 # Ansible
 ansible_user: henderiw

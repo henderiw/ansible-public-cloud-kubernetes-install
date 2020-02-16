@@ -3,9 +3,6 @@
   yum:
     name: '*'
     state: latest
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: install  packages
   yum: 
@@ -14,65 +11,41 @@
   with_items:
     - { pkgname: "epel-release", state: "present"  }
     - { pkgname: "ntp", state: "present"  }
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Update /etc/hosts file on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/hosts
     line: "{{ ansible_host }} {{ inventory_hostname }}"
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Restart network service on {{ inventory_hostname }} 
   service:
     name: network
     state: restarted
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Remove old NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     regexp: "^server"
     state: absent
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Configure NTP servers on {{ inventory_hostname }}
   lineinfile:
     dest: /etc/ntp.conf
     line: "server {{ item }} iburst"
   with_items: "{{ ntp_server_list }}"
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Stop the ntpd service if running on {{ inventory_hostname }}
   service:
     name: ntpd
     state: stopped
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Manually sync time with ntp server on {{ inventory_hostname }}
   command: ntpdate -u "{{ntp_server_list[0]}}"
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: Start ntpd on {{ inventory_hostname }} 
   service:
     name: ntpd
     state: started
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: check ntp sync state
   shell: ntpstat | awk 'NR==1{print $1}'
@@ -80,9 +53,6 @@
   until: sync_status.stdout == "synchronised"
   retries: 29
   delay: 10
-  become: yes
-  become_user: root
-  become_method: sudo
 
 - name: install  packages
   yum: 
@@ -92,9 +62,6 @@
     - { pkgname: "bridge-utils", state: "present"  }
     - { pkgname: "golang", state: "present"  }
     - { pkgname: "git", state: "present"  }
-  become: yes
-  become_user: root
-  become_method: sudo
 
 ###### Kubernetes specifics #########
 

@@ -1,0 +1,9 @@
+- name: download git files
+  git:
+    repo: "{{ item.src }}"
+    dest: "~/{{ item.dest}}"
+    clone: yes
+    update: yes
+  become_user: "{{ user }}"
+  with_items:
+    - { src: "https://github.com/henderiw/ansible-public-cloud-kubernetes-install", dest: "ansible-public-cloud-kubernetes-install" }
