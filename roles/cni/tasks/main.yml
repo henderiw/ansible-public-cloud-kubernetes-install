@@ -12,6 +12,7 @@
         dest: "{{ network_dir }}/{{ item | basename | regex_replace('\\.j2','') }}"
       with_fileglob:
         - ../templates/{{ network }}*.j2
+      when: network == "calico"
 
     - name: "Check {{ network }} daemonset is working"
       shell: kubectl --kubeconfig={{ kubeadmin_config }} get ds --all-namespaces | grep {{ network }}
@@ -20,13 +21,14 @@
       register: check_net
       ignore_errors: true
       changed_when: false
+      when: network == "calico"
 
     - name: "Create {{ network }} network daemonset"
       when: check_net is failed
       command: kubectl apply --kubeconfig={{ kubeadmin_config }} -f {{ network_dir }}/
       delegate_to: "{{ groups['master'][0] }}"
       run_once: true
-  when: network == 'calico'
+  when: network == "calico"
 
 - name: install azure cni
   block:
@@ -39,4 +41,4 @@
 
     - name: "install azure cni"
       shell: "{{ network_dir }}/./install-azure-cni-plugin.sh v1.0.32"
-  when: network == 'azure'
+  when: network == "azure"
