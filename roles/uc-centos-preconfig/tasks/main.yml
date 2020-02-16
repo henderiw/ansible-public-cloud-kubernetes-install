@@ -8,7 +8,9 @@
   become_method: sudo
 
 - name: install  packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
   with_items:
     - { pkgname: "epel-release", state: "present"  }
     - { pkgname: "ntp", state: "present"  }
@@ -83,7 +85,9 @@
   become_method: sudo
 
 - name: install  packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
   with_items:
     - { pkgname: "bridge-utils", state: "present"  }
     - { pkgname: "golang", state: "present"  }
@@ -101,14 +105,14 @@
     block: |
       {{ item.ip }} {{ item.name }}
   with_items:
-    - { name: tfMaster0, ip: 10.10.20.20 }
-    - { name: tfMaster1, ip: 10.10.20.21 }
-    - { name: tfMaster2, ip: 10.10.20.22 }
-    - { name: tfWorker0, ip: 10.10.20.100 }
-    - { name: tfWorker1, ip: 10.10.20.101 }
-    - { name: tfWorker2, ip: 10.10.20.102 }
-    - { name: tfWorker3, ip: 10.10.20.103 }
-    - { name: tfWorker4, ip: 10.10.20.104 }
+    - { name: master0, ip: 10.10.20.20 }
+    - { name: master1, ip: 10.10.20.21 }
+    - { name: master2, ip: 10.10.20.22 }
+    - { name: worker0, ip: 10.10.20.100 }
+    - { name: worker1, ip: 10.10.20.101 }
+    - { name: worker2, ip: 10.10.20.102 }
+    - { name: worker3, ip: 10.10.20.103 }
+    - { name: worker4, ip: 10.10.20.104 }
   become: yes
   become_user: root
   become_method: sudo
@@ -143,7 +147,9 @@
 #   register: br_netfilter
 
 - name: install docker-ce dependency packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
   with_items:
     - { pkgname: "yum-utils", state: "present"  }
     - { pkgname: "device-mapper-persistent-data", state: "present"  }
@@ -159,7 +165,9 @@
   become_method: sudo
 
 - name: install docker-ce dependency packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
   with_items:
     - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
   become: yes
@@ -286,7 +294,8 @@
   become_method: sudo
 
 - name: Check if EPEL repo is already configured.
-  stat: path="/etc/yum.repos.d/cbs.centos.org_repos_paas7-crio-311-candidate_x86_64_os_.repo"
+  stat: 
+    path: "/etc/yum.repos.d/cbs.centos.org_repos_paas7-crio-311-candidate_x86_64_os_.repo"
   register: crio_repofile_result
   become_user: root
 
@@ -298,7 +307,10 @@
   become_method: sudo
 
 - name: install cri-o
-  yum: name={{ item.pkgname }} state={{ item.state }} disable_gpg_check=yes
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
+    disable_gpg_check: yes
   with_items:
     - { pkgname: "cri-o", state: "present"  }
   become: yes
@@ -316,7 +328,8 @@
 # Kubernetes Repo's
 
 - name: Check if kubernetes repo is already configured.
-  stat: path="/etc/yum.repos.d/kubernetes.repo"
+  stat: 
+    path: "/etc/yum.repos.d/kubernetes.repo"
   register: kubernetes_repofile_result
   become_user: root
 
@@ -352,7 +365,9 @@
   become_method: sudo
 
 - name: install kubernetes packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: {{ item.pkgname }}
+    state: "present"
   with_items:
     - { pkgname: "kubelet", state: "present"  }
     - { pkgname: "kubeadm", state: "present"  }

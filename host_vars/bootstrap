@@ -1,0 +1,14 @@
+#Docker
+registry_ip: 10.0.1.10
+registry_port: 5000
+registry_user: admin
+registry_pass: admin
+
+user: henderiw
+
+image_dir: images
+
+nrd_image: Nokia-NRD-Package-11.0.R5.tar.gz
+nrd_version: NRD_11_0_R5
+nrd_dir: nrd_11_0_R5
+docker_dir: docker_images

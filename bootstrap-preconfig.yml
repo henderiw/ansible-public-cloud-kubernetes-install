@@ -1,0 +1,17 @@
+---
+- hosts: bootstrap
+  gather_facts: no
+  serial: 1
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    #- { role: centos, tags: centos }
+    - { role: docker, tags: docker }
+    #- { role: images, tags: images }
+    - { role: docker-registry, tags: docker-registry }
+    - { role: docker-load, tags: docker-load }
+    - { role: iptables, tags: iptables }
+    #- { role: ssh, tags: ssh }
+    #- { role: routes, tags: routes }
+    

@@ -1,40 +1,15 @@
 ---
-# - hosts: kube_cluster
-#   gather_facts: no
-#   serial: 1
-#   roles:
-#     - uc-centos-preconfig
+- hosts: kube_cluster
+  gather_facts: no
+  serial: 1
+  roles:
+    - uc-centos-preconfig
 
-# - name: Setup docker 
-#   hosts: kube_cluster
-#   gather_facts: no
-#   become: yes
-#   become_user: root
-#   become_method: sudo
-#   roles:
-#     - { role: docker, tags: docker }
-
-- name: Setup bootstrap 
-  hosts: bootstrap
+- name: Setup docker 
+  hosts: kube_cluster
   gather_facts: no
   become: yes
   become_user: root
   become_method: sudo
   roles:
     - { role: docker, tags: docker }
-
-- name: Setup private docker registry
-  hosts: localhost
-  become: yes
-  become_user: root
-  become_method: sudo
-  roles:
-    - { role: docker-registry, tags: docker-registry }
-
-- name: load images to docker registry
-  hosts: localhost
-  become: yes
-  become_user: root
-  become_method: sudo
-  roles:
-    - { role: docker-load, tags: docker-load }

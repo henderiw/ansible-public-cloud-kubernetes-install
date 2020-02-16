@@ -1,0 +1,6 @@
+{% for host in item %}
+{% if host != "0.0.0.0" %}
+Host {{ host }}
+  IdentityFile ~/.ssh/paco_rsa
+{% endif %}
+{% endfor %}

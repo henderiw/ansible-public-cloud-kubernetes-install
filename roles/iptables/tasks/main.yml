@@ -1,0 +1,21 @@
+---
+- name: iptables FWD rule eth0 -> eth1
+  iptables:
+    chain: FORWARD
+    in_interface: eth0
+    out_interface: eth1
+    jump: ACCEPT
+
+- name: iptables FWD rule eth1 -> eth0
+  iptables:
+    chain: FORWARD
+    in_interface: eth1
+    out_interface: eth0
+    jump: ACCEPT
+
+- name: NAT all traffic
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    jump: MASQUERADE

@@ -1,8 +1,9 @@
 ---
 - name: copy docker files to /tmp
   copy:
-    src: "{{ local_dir }}/{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
+    src: "/home/{{ user }}/nrd/{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
     dest: "/tmp/{{ item }}"
+    remote_src: yes
     mode: 0644
   with_items:
     - nrd.tar.gz

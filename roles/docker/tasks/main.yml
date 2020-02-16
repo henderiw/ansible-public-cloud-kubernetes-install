@@ -1,6 +1,8 @@
 ---
 - name: install docker-ce dependency packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: "{{ item.pkgname }}" 
+    state: "latest"
   with_items:
   - { pkgname: "yum-utils", state: "latest"  }
   - { pkgname: "device-mapper-persistent-data", state: "latest"  }
@@ -18,7 +20,9 @@
 #   become_method: sudo
 
 - name: install docker-ce dependency packages
-  yum: name={{ item.pkgname }} state={{ item.state }}
+  yum: 
+    name: "{{ item.pkgname }}" 
+    state: "present"
   with_items:
   - { pkgname: "docker-ce-18.06.2.ce", state: "present"  }
     
@@ -81,9 +85,9 @@
     daemon_reload: yes
     name: docker
  
-- name: Add user artem to docker group
+- name: Add user to docker group
   user:
-    name: "{{ ansible_user }}"
+    name: "{{ user }}"
     groups: docker
     append: yes
 
