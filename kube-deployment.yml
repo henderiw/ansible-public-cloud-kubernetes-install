@@ -16,10 +16,10 @@
     - { role: kubernetes/node, tags: node }
 
 
-# - hosts: kube_cluster
-#   gather_facts: yno
-#   become: yes
-#   become_user: root
-#   become_method: sudo
-#   roles:
-#     - { role: calicoctl, tags: calicoctl }
+- hosts: kube_cluster
+  gather_facts: yno
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - { role: calicoctl, tags: calicoctl }
