@@ -4,7 +4,13 @@ unpacked: true
 ntp_server_list:
   - 10.0.1.10
 
+#Docker
 registry_ip: 10.0.1.10
+registry_port: 5000
+registry_user: admin
+registry_pass: admin
+
+user: henderiw
 
 #KUBERTNETES SPECIFIC
 
