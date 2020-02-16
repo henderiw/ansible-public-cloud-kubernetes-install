@@ -36,6 +36,7 @@
       template:
         src: "{{ item }}"
         dest: "{{ network_dir }}/{{ item | basename | regex_replace('\\.j2','') }}"
+        mode: 0755
       with_fileglob:
         - ../templates/install-azure-cni-plugin.sh.j2
 
