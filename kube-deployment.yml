@@ -12,7 +12,9 @@
   become_user: root
   become_method: sudo
   roles:
+    - { role: cni, tags: cni }
     - { role: kubernetes/node, tags: node }
+
 
 # - hosts: kube_cluster
 #   gather_facts: yno
