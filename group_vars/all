@@ -4,6 +4,8 @@ unpacked: true
 ntp_server_list:
   - 10.0.1.10
 
+registry_ip: 10.0.1.10
+
 #KUBERTNETES SPECIFIC
 
 master_ip: 10.1.0.10
