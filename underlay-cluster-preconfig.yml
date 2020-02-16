@@ -6,10 +6,9 @@
   become_user: root
   become_method: sudo
   roles:
-    #- { role: centos, tags: centos }
-    #- { role: ntp, tags: ntp }
-    #- { role: docker, tags: docker }
-    #- { role: kubernetes/underlay, tags: underlay }
-    #- { role: uc-centos-preconfig, tags: uc-centos-preconfig}
+    - { role: centos, tags: centos }
+    - { role: ntp, tags: ntp }
+    - { role: docker, tags: docker }
+    - { role: kubernetes/underlay, tags: underlay }
     - { role: ssh, tags: ssh }
     
