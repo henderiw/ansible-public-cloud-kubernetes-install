@@ -11,7 +11,8 @@
         src: "{{ item }}"
         dest: "{{ network_dir }}/{{ item | basename | regex_replace('\\.j2','') }}"
       with_fileglob:
-        - ../templates/{{ network }}*.j2
+        - ../templates/calico-host-local.yml.j2
+        #- ../templates/{{ network }}*.j2
       when: network == "calico"
 
     - name: "Check {{ network }} daemonset is working"
