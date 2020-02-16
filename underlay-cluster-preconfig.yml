@@ -8,8 +8,8 @@
   roles:
     #- { role: centos, tags: centos }
     #- { role: ntp, tags: ntp }
-    - { role: docker, tags: docker }
-    - { role: kubernetes/underlay, tags: underlay }
+    #- { role: docker, tags: docker }
+    #- { role: kubernetes/underlay, tags: underlay }
     #- { role: uc-centos-preconfig, tags: uc-centos-preconfig}
     - { role: ssh, tags: ssh }
     

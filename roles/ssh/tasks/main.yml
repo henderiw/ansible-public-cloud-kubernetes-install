@@ -1,6 +1,6 @@
 - name: Copy file with owner and permissions
   copy:
-    src: /Users/henderiw/.ssh/paco_rsa
+    src: "{{ home_dir }}/.ssh/paco_rsa"
     dest: ~/.ssh/paco_rsa
     owner: henderiw
     group: henderiw

@@ -4,6 +4,7 @@ registry_port: 5000
 registry_user: admin
 registry_pass: admin
 
+home_dir: /Users/henderiw
 user: henderiw
 
 image_dir: images

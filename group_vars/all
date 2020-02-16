@@ -10,6 +10,8 @@ registry_port: 5000
 registry_user: admin
 registry_pass: admin
 
+#Home info
+home_dir: /home/henderiw
 user: henderiw
 
 #KUBERTNETES SPECIFIC
