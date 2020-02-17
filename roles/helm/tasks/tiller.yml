@@ -11,8 +11,17 @@
   changed_when: "'created' in result.stdout"
   failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
 
-- name: install or upgrade tiller
-  shell: "{{ helm_bin_dir }}/helm init {{ helm_refresh_cache }} --upgrade"
+- name: "generate helm.json file"
+  template:
+      src: helm.json.j2 
+      dest: "{{ helm_bin_dir }}/helm.json"
+      mode: '0644'
+
+- name: install tiller
+  shell: kubectl apply -f {{ helm_bin_dir }}/helm.json
+
+# - name: install or upgrade tiller
+#   shell: "{{ helm_bin_dir }}/helm init {{ helm_refresh_cache }} --upgrade"
 
 - name: check serviceaccount field in {{ helm_tiller }} deployment
   shell: kubectl get deploy {{ helm_tiller }} -n kube-system -o yaml
