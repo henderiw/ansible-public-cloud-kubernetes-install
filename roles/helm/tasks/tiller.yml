@@ -13,15 +13,15 @@
 
 - name: "generate helm.json file"
   template:
-      src: helm.json.j2 
-      dest: "{{ helm_bin_dir }}/helm.json"
+      src: helm.yml.j2 
+      dest: "{{ helm_bin_dir }}/helm.yml"
       mode: '0644'
   become: yes
   become_user: root
   become_method: sudo
 
 - name: install tiller
-  shell: kubectl apply -f {{ helm_bin_dir }}/helm.json
+  shell: kubectl apply -f {{ helm_bin_dir }}/helm.yml
 
 # - name: install or upgrade tiller
 #   shell: "{{ helm_bin_dir }}/helm init {{ helm_refresh_cache }} --upgrade"
