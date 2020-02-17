@@ -26,4 +26,5 @@
 - hosts: master
   gather_facts: no
   roles:
-    - { role: helm, tags: helm }
+    #- { role: helm, tags: helm }
+    - { role: istio, tags: istio }
