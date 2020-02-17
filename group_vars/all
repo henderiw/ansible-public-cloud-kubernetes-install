@@ -69,7 +69,10 @@ tmp_dir: /tmp/kubeadm-ansible-files
 
 #helm
 helm_version: v2.14.3
-helm_url: https://github.com/helm/helm/releases/tag/{{ helm_version }}-linux-amd64.tar.gz
+helm_url: https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz
 helm_bin_dir: /usr/local/bin/
 helm_tiller: tiller-deploy
 helm_refresh_cache: ""
+
+
+#https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz
