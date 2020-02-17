@@ -66,3 +66,10 @@ additional_features:
 
 # temporary directory used by additional features
 tmp_dir: /tmp/kubeadm-ansible-files
+
+#helm
+helm_version: v2.14.3
+helm_url: https://github.com/helm/helm/releases/tag/{{ helm_version }}-linux-amd64.tar.gz
+helm_bin_dir: /usr/local/bin/
+helm_tiller: tiller-deploy
+helm_refresh_cache: ""
