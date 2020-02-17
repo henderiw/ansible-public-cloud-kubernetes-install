@@ -25,6 +25,5 @@
 
 - hosts: master
   gather_facts: no
-  become: yes
   roles:
     - { role: helm, tags: helm }
