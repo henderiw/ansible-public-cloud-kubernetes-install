@@ -16,6 +16,9 @@
       src: helm.json.j2 
       dest: "{{ helm_bin_dir }}/helm.json"
       mode: '0644'
+  become: yes
+  become_user: root
+  become_method: sudo
 
 - name: install tiller
   shell: kubectl apply -f {{ helm_bin_dir }}/helm.json
