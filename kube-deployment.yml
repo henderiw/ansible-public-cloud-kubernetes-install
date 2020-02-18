@@ -6,14 +6,14 @@
 #     - { role: kubernetes/master, tags: master }
 #     - { role: cni, tags: cni }
     
-# - hosts: node
-#   gather_facts: no
-#   become: yes
-#   become_user: root
-#   become_method: sudo
-#   roles:
-# #    - { role: cni, tags: cni }
-#     - { role: kubernetes/node, tags: node }
+- hosts: node
+  gather_facts: no
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+#    - { role: cni, tags: cni }
+    - { role: kubernetes/node, tags: node }
 
 # - hosts: kube_cluster
 #   gather_facts: yno
@@ -23,8 +23,8 @@
 #   roles:
 #     - { role: calicoctl, tags: calicoctl }
 
-- hosts: master
-  gather_facts: no
-  roles:
-    #- { role: helm, tags: helm }
-    - { role: istio, tags: istio }
+# - hosts: master
+#   gather_facts: no
+#   roles:
+#     - { role: helm, tags: helm }
+#     - { role: istio, tags: istio }
