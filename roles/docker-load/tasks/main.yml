@@ -3,7 +3,7 @@
   copy:
     src: "/home/{{ user }}/nrd/{{ nrd_dir }}/{{ docker_dir }}/{{ item }}"
     dest: "/tmp/{{ item }}"
-    remote_src: yes
+    #remote_src: yes
     mode: 0644
   with_items:
     - nrd.tar.gz

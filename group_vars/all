@@ -79,3 +79,6 @@ helm_refresh_cache: ""
 istio_version : 1.2.10
 istio_url: https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux.tar.gz
 istio_bin_dir: /usr/local/bin/
+
+#cmm
+cmm_src_tar: /Users/henderiw/Downloads/cmm.tar

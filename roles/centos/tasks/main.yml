@@ -1,4 +1,9 @@
 ---
+- name: Enable SELinux
+  selinux:
+    policy: targeted
+    state: permissive
+
 - name: upgrade all packages on {{ inventory_hostname }}
   yum:
     name: '*'
