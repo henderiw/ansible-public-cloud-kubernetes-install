@@ -33,12 +33,12 @@
       var: rc_nrd_archive_files
   when: unpacked|default(false) 
 
-- name: Ensure directory exists for CMM
-  file: 
-    name: /home/{{ user }}/cmm/ 
-    state: directory 
-    mode: 0755
-  become_user: "{{ user }}"
+# - name: Ensure directory exists for CMM
+#   file: 
+#     name: /home/{{ user }}/cmm/ 
+#     state: directory 
+#     mode: 0755
+#   become_user: "{{ user }}"
 
 - name: upload cmm.tar file to bootstrap vm
   copy:
@@ -57,7 +57,11 @@
       var: rc_cmm
 
   - name: Unpack NRD Archive
-    unarchive: src="{{ rc_cmm.files[0].path}}" dest="/home/{{ user }}/cmm" list_files=yes remote_src=yes
+    unarchive: 
+      src: "/home/{{ user }}/cmm.tar" 
+      dest: "/home/{{ user }}/" 
+      list_files: yes 
+      remote_src: yes
     register: rc_cmm_archive_files
     when: rc_cmm.matched > 0
 

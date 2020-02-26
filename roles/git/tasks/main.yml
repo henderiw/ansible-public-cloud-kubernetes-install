@@ -1,4 +1,4 @@
-- name: download git files
+- name: download git generic public cloud files
   git:
     repo: "{{ item.src }}"
     dest: "~/{{ item.dest}}"
@@ -7,3 +7,13 @@
   become_user: "{{ user }}"
   with_items:
     - { src: "https://github.com/henderiw/ansible-public-cloud-kubernetes-install", dest: "ansible-public-cloud-kubernetes-install" }
+
+- name: download git amf files
+  git:
+    repo: "{{ item.src }}"
+    dest: "~/{{ item.dest}}"
+    clone: yes
+    update: yes
+  become_user: "{{ user }}"
+  with_items:
+    - { src: "https://github.com/henderiw/ansible-public-cloud-amf", dest: "ansible-public-cloud-amf" }
